@@ -1,32 +1,59 @@
-class Banco:
-    def __init__(self):
-        self.fila_preferencial = []
-        self.fila_normal = []
-    
-    def adicionar_usuario(self, usuario, tipo):
-        if tipo == "preferencial":
-            self.fila_preferencial.append(usuario)
-        elif tipo == "normal":
-            self.fila_normal.append(usuario)
-    
-    def chamar_atendimento(self):
-        if self.fila_preferencial:
-            return self.fila_preferencial.pop(0)  # Chama um usuário preferencial
-        elif self.fila_normal:
-            return self.fila_normal.pop(0)  # Chama um usuário normal
-        else:
-            return "Nenhum usuário na fila."
+class FilaBanco {
+    constructor() {
+        this.filaPreferencial = [];
+        this.filaNormal = [];
+        this.ultimoChamado = null;
+    }
 
-# Exemplo de uso
-banco = Banco()
+    adicionarUsuario(tipo, senha) {
+        if (tipo === "preferencial") {
+            this.filaPreferencial.push(senha);
+        } else if (tipo === "normal") {
+            this.filaNormal.push(senha);
+        }
+    }
 
-# Adicionando usuários
-banco.adicionar_usuario("Usuário A", "preferencial")
-banco.adicionar_usuario("Usuário B", "normal")
-banco.adicionar_usuario("Usuário C", "normal")
+    chamarUsuario() {
+        if (this.ultimoChamado === "preferencial") {
+            // Se o último chamado foi preferencial, chama normal se houver
+            if (this.filaNormal.length > 0) {
+                this.ultimoChamado = "normal";
+                return this.filaNormal.shift(); // Chama um usuário normal
+            }
+        }
 
-# Chamando atendimento
-print(banco.chamar_atendimento())  # Saída: Usuário A
-print(banco.chamar_atendimento())  # Saída: Usuário B
-print(banco.chamar_atendimento())  # Saída: Usuário C
-print(banco.chamar_atendimento())  # Saída: Nenhum usuário na fila.
+        // Se não houver normal ou último chamado foi normal
+        if (this.filaPreferencial.length > 0) {
+            this.ultimoChamado = "preferencial";
+            return this.filaPreferencial.shift(); // Chama um usuário preferencial
+        } else if (this.filaNormal.length > 0) {
+            this.ultimoChamado = "normal";
+            return this.filaNormal.shift(); // Chama um usuário normal
+        }
+
+        return null; // Não há usuários na fila
+    }
+
+    verificarFilas() {
+        return {
+            preferencial: this.filaPreferencial.length,
+            normal: this.filaNormal.length
+        };
+    }
+}
+
+// Exemplo de uso
+const sistemaBanco = new FilaBanco();
+
+// Adicionando usuários
+sistemaBanco.adicionarUsuario("preferencial", "senha1");
+sistemaBanco.adicionarUsuario("normal", "senha2");
+sistemaBanco.adicionarUsuario("normal", "senha3");
+sistemaBanco.adicionarUsuario("preferencial", "senha4");
+
+// Chamando usuários
+console.log(sistemaBanco.chamarUsuario()); // Chama preferencial: senha1
+console.log(sistemaBanco.chamarUsuario()); // Chama normal: senha2
+console.log(sistemaBanco.chamarUsuario()); // Chama normal: senha3
+console.log(sistemaBanco.chamarUsuario()); // Chama preferencial: senha4
+console.log(sistemaBanco.chamarUsuario()); // null (sem usuários)
